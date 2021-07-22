@@ -76,7 +76,7 @@ class Ship:
         if self.cool_down_counter >= self.COOLDOWN:
             self.cool_down_counter = 0
         elif self.cool_down_counter > 0:
-            self.cool_down_counter += 1 * 2
+            self.cool_down_counter += 1 * 2.5
 
     def shoot(self):
         if self.cool_down_counter == 0:
@@ -153,7 +153,106 @@ def collide(obj1, obj2):
     return obj1.mask.overlap(obj2.mask, (offset_x, offset_y)) is not None
 
 
-def main():
+def easy():
+    run = True
+    fps = 60
+    level = 0
+    lives = 5
+    main_font = pygame.font.SysFont("comicsans", 50)
+    lost_font = pygame.font.SysFont("comicsans", 60)
+
+    enemies = []
+    wave_length = 2
+    enemy_vel = 1
+
+    player_vel = 5
+    laser_vel = 4
+
+    player = Player(300, 585)
+
+    clock = pygame.time.Clock()
+
+    lost = False
+    lost_count = 0
+
+    def redraw_window():
+        WIN.blit(BG, (0, 0))
+        # draw text
+        lives_label = main_font.render(f"Lives: {lives}", True, (255, 255, 255))
+        level_label = main_font.render(f"Level: {level}", True, (255, 255, 255))
+
+        WIN.blit(lives_label, (10, 10))
+        WIN.blit(level_label, (WIDTH - level_label.get_width() - 10, 10))
+
+        for enemi in enemies:
+            enemi.draw(WIN)
+
+        player.draw(WIN)
+
+        if lost:
+            lost_label = lost_font.render("You Lost!!", True, (255, 255, 255))
+            WIN.blit(lost_label, (WIDTH/2 - lost_label.get_width()/2, 350))
+
+        pygame.display.update()
+
+    while run:
+        clock.tick(fps)
+        redraw_window()
+
+        if lives <= 0 or player.health <= 0:
+            lost = True
+            lost_count += 1
+
+        if lost:
+            if lost_count > fps * 3:
+                run = False
+            else:
+                continue
+
+        if len(enemies) == 0:
+            level += 1
+            wave_length += 5
+            for i in range(wave_length):
+                enemy = Enemy(random.randrange(50, WIDTH-100), random.randrange(-1500, -100),
+                              random.choice(["red", "blue", "green"]))
+                enemies.append(enemy)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                quit()
+
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_a] and player.x - player_vel > 0:  # left
+            player.x -= player_vel
+        if keys[pygame.K_d] and player.x + player_vel + player.get_width() < WIDTH:  # right
+            player.x += player_vel
+        if keys[pygame.K_w] and player.y - player_vel > 0:  # up
+            player.y -= player_vel
+        if keys[pygame.K_s] and player.y + player_vel + player.get_height() + 20 < HEIGHT:  # down
+            player.y += player_vel
+        if keys[pygame.K_SPACE]:
+            player.shoot()
+        if keys[pygame.K_ESCAPE]:
+            main_menu()
+
+        for enemy in enemies[:]:
+            enemy.move(enemy_vel)
+            enemy.move_lasers(laser_vel, player)
+
+            if random.randrange(0, 120) == 1:
+                enemy.shoot()
+
+            if collide(enemy, player):
+                player.health -= 10
+                enemies.remove(enemy)
+            elif enemy.y + enemy.get_height() > HEIGHT:
+                lives -= 1
+                enemies.remove(enemy)
+
+        player.move_lasers(-laser_vel, enemies)
+
+
+def medium():
     run = True
     fps = 60
     level = 0
@@ -232,6 +331,107 @@ def main():
             player.y += player_vel
         if keys[pygame.K_SPACE]:
             player.shoot()
+        if keys[pygame.K_ESCAPE]:
+            main_menu()
+
+        for enemy in enemies[:]:
+            enemy.move(enemy_vel)
+            enemy.move_lasers(laser_vel, player)
+
+            if random.randrange(0, 120) == 1:
+                enemy.shoot()
+
+            if collide(enemy, player):
+                player.health -= 10
+                enemies.remove(enemy)
+            elif enemy.y + enemy.get_height() > HEIGHT:
+                lives -= 1
+                enemies.remove(enemy)
+
+        player.move_lasers(-laser_vel, enemies)
+
+
+def hard():
+    run = True
+    fps = 60
+    level = 0
+    lives = 5
+    main_font = pygame.font.SysFont("comicsans", 50)
+    lost_font = pygame.font.SysFont("comicsans", 60)
+
+    enemies = []
+    wave_length = 5
+    enemy_vel = 2
+
+    player_vel = 5
+    laser_vel = 4
+
+    player = Player(300, 585)
+
+    clock = pygame.time.Clock()
+
+    lost = False
+    lost_count = 0
+
+    def redraw_window():
+        WIN.blit(BG, (0, 0))
+        # draw text
+        lives_label = main_font.render(f"Lives: {lives}", True, (255, 255, 255))
+        level_label = main_font.render(f"Level: {level}", True, (255, 255, 255))
+
+        WIN.blit(lives_label, (10, 10))
+        WIN.blit(level_label, (WIDTH - level_label.get_width() - 10, 10))
+
+        for enemi in enemies:
+            enemi.draw(WIN)
+
+        player.draw(WIN)
+
+        if lost:
+            lost_label = lost_font.render("You Lost!!", True, (255, 255, 255))
+            WIN.blit(lost_label, (WIDTH/2 - lost_label.get_width()/2, 350))
+
+        pygame.display.update()
+
+    while run:
+        clock.tick(fps)
+        redraw_window()
+
+        if lives <= 0 or player.health <= 0:
+            lost = True
+            lost_count += 1
+
+        if lost:
+            if lost_count > fps * 3:
+                run = False
+            else:
+                continue
+
+        if len(enemies) == 0:
+            level += 1
+            wave_length += 5
+            for i in range(wave_length):
+                enemy = Enemy(random.randrange(50, WIDTH-100), random.randrange(-1500, -100),
+                              random.choice(["red", "blue", "green"]))
+                enemies.append(enemy)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                quit()
+
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_a] and player.x - player_vel > 0:  # left
+            player.x -= player_vel
+        if keys[pygame.K_d] and player.x + player_vel + player.get_width() < WIDTH:  # right
+            player.x += player_vel
+        if keys[pygame.K_w] and player.y - player_vel > 0:  # up
+            player.y -= player_vel
+        if keys[pygame.K_s] and player.y + player_vel + player.get_height() + 20 < HEIGHT:  # down
+            player.y += player_vel
+        if keys[pygame.K_SPACE]:
+            player.shoot()
+        if keys[pygame.K_ESCAPE]:
+            main_menu()
 
         for enemy in enemies[:]:
             enemy.move(enemy_vel)
@@ -251,18 +451,32 @@ def main():
 
 
 def main_menu():
-    title_font = pygame.font.SysFont("comicsans", 70)
+    difficult_font = pygame.font.SysFont("comicsans", 50)
+    easy_font = pygame.font.SysFont("comicsans", 35)
+    medium_font = pygame.font.SysFont("comicsans", 35)
+    hard_font = pygame.font.SysFont("comicsans", 35)
     run = True
     while run:
         WIN.blit(BG, (0, 0))
-        title_label = title_font.render("Press the mouse to begin...", True, (255, 255, 255))
-        WIN.blit(title_label, (WIDTH/2 - title_label.get_width()/2, 350))
+        difficult_label = difficult_font.render("Select Difficult:", True, (255, 255, 255))
+        easy_label = easy_font.render("1 - Easy", True, (255, 255, 255))
+        medium_label = medium_font.render("2 - Medium", True, (255, 255, 255))
+        hard_label = hard_font.render("3 - Hard", True, (255, 255, 255))
+        WIN.blit(difficult_label, (WIDTH/2 - difficult_label.get_width()/2, 300))
+        WIN.blit(easy_label, (WIDTH/2 - easy_label.get_width()/2, 350))
+        WIN.blit(medium_label, (WIDTH/2 - medium_label.get_width()/2, 380))
+        WIN.blit(hard_label, (WIDTH/2 - hard_label.get_width()/2, 410))
         pygame.display.update()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                main()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_1:
+                    easy()
+                elif event.key == pygame.K_2:
+                    medium()
+                elif event.key == pygame.K_3:
+                    hard()
 
     pygame.quit()
 
