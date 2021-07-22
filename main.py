@@ -180,9 +180,11 @@ def easy():
         # draw text
         lives_label = main_font.render(f"Lives: {lives}", True, (255, 255, 255))
         level_label = main_font.render(f"Level: {level}", True, (255, 255, 255))
+        back_label = main_font.render("ESC to go back", True, (255, 255, 255))
 
         WIN.blit(lives_label, (10, 10))
         WIN.blit(level_label, (WIDTH - level_label.get_width() - 10, 10))
+        WIN.blit(back_label, (WIDTH/2 - back_label.get_width()/2, 10))
 
         for enemi in enemies:
             enemi.draw(WIN)
@@ -279,9 +281,11 @@ def medium():
         # draw text
         lives_label = main_font.render(f"Lives: {lives}", True, (255, 255, 255))
         level_label = main_font.render(f"Level: {level}", True, (255, 255, 255))
+        back_label = main_font.render("ESC to go back", True, (255, 255, 255))
 
         WIN.blit(lives_label, (10, 10))
         WIN.blit(level_label, (WIDTH - level_label.get_width() - 10, 10))
+        WIN.blit(back_label, (WIDTH/2 - back_label.get_width()/2, 10))
 
         for enemi in enemies:
             enemi.draw(WIN)
@@ -378,9 +382,11 @@ def hard():
         # draw text
         lives_label = main_font.render(f"Lives: {lives}", True, (255, 255, 255))
         level_label = main_font.render(f"Level: {level}", True, (255, 255, 255))
+        back_label = main_font.render("ESC to go back", True, (255, 255, 255))
 
         WIN.blit(lives_label, (10, 10))
         WIN.blit(level_label, (WIDTH - level_label.get_width() - 10, 10))
+        WIN.blit(back_label, (WIDTH/2 - back_label.get_width()/2, 10))
 
         for enemi in enemies:
             enemi.draw(WIN)
@@ -469,7 +475,7 @@ def main_menu():
         pygame.display.update()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                run = False
+                quit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_1:
                     easy()
